@@ -43,7 +43,7 @@ instance ToJSON City where
     toJSON (City name Nothing) = object ["name" .= name]
 
 instance ToJSON Unit where
-    toJSON (Unit value owner) = object ["value" .= value, "owner" .= owner]
+    toJSON (Unit value owner wasMovedThisTurn) = object ["value" .= value, "owner" .= owner, "wasMoved" .= wasMovedThisTurn]
 
 instance ToJSON Point where
     toJSON (Point x y) = object ["x" .= x, "y" .= y]

@@ -33,8 +33,10 @@ type BattleValue = Int
 
 data Unit = Unit {
     _BattleValue :: BattleValue,
-    _owner :: Player
+    _owner :: Player,
+    _WasMovedInTurn :: Bool
 } deriving (Show, Eq)
+
 
 makeFields ''Unit
 makeLenses ''Unit

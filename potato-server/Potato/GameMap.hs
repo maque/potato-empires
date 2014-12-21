@@ -17,8 +17,8 @@ import System.Random
 randomMap :: RandomM GameMap
 randomMap = do
     let map = emptyMap
-                & (ix (Point 0 1).unit) `set` (Just $ Unit 12 Redosia)
-                & (ix (Point 3 4).unit) `set` (Just $ Unit 10 Shitloadnam)
+                & (ix (Point 0 1).unit) `set` (Just $ Unit 12 Redosia False)
+                & (ix (Point 3 4).unit) `set` (Just $ Unit 10 Shitloadnam False)
                 & (ix (Point 1 1).city) `set` (Just $ City "Cityville" (Just Redosia))
                 & (ix (Point 8 8).city) `set` (Just $ City "Townville" (Just Shitloadnam))
     

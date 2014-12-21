@@ -106,7 +106,10 @@ app clientDir mapGenerator = do
     get "/map" $ do
         game <- getGameState
         json $ getFieldTypesList game
-    
+    get "/units/add" $ do
+        let myNewUnit = (Unit 99 Redosia False)
+        runGameState $ gameMap %= (ix (Point 1 1) . unit .~ Just myNewUnit)
+        redirect "/units"
     get "/initial" $ do
         game <- getGameState
         json $ createInitialStatePacket game
