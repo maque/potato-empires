@@ -41,11 +41,15 @@ type GameMonad = State GameState
 
 isValid :: Player -> GameState -> Move -> Bool
 isValid player game (Move start end) =
-    and [isCurrentPlayer, isNotOutOfBounds, isValidUnitAtStart, isValidDestination, isNotTooFar]
+    and [isCurrentPlayer, isNotMovingTwice, isNotOutOfBounds, isValidUnitAtStart, isValidDestination, isNotTooFar]
     where
         gmap = game ^. gameMap
         
         isCurrentPlayer = player == game ^. currentPlayer
+
+	isNotMovingTwice = case maybeUnitAtStart of
+	    Just unit -> unit ^. wasMovedInTurn == False
+	    Nothing -> True
 
         isNotOutOfBounds = inRange (bounds gmap) start && inRange (bounds gmap) end
 
@@ -102,8 +106,9 @@ applyMove p (Move start end) = do
         where
             aUnit = fromJust $ (gm ! start) ^. unit
             maybeOtherUnit = (gm ! end) ^. unit
-            setDestinationUnit gm u = gm & ix end . unit .~ (Just u)
+            setDestinationUnit gm u = gm & ix end . unit .~ (Just $ moveUnitInTurn u)
             merge unitA unitB = unitA & battleValue +~ (unitB ^. battleValue)
+	    --setM u = (Unit u ^. battleValue u ^. owner True)
 
     changeStart = (gameMap . ix start . unit .= Nothing)
 
@@ -119,8 +124,8 @@ applyMove p (Move start end) = do
             generateUnit' :: Player -> MapField -> MapField
             generateUnit' p field =
                 case field ^. unit of
-                    Just (Unit value p) -> field & unit .~ Just (Unit (value + 5) p)
-                    Nothing -> field & unit .~ Just (Unit 5 p)
+                    Just (Unit value p wasMoved) -> field & unit .~ Just (Unit (value + 5) p wasMoved)
+                    Nothing -> field & unit .~ Just (Unit 5 p False)
 
     deductPlayerMove = get >>= \g -> if isPlayerLastMove g
                           then endTurn
@@ -159,6 +164,12 @@ battle unitA unitB =
        if newUnit ^. battleValue == 0
            then newUnit & (battleValue `set` 1)
            else newUnit          
+
+moveUnitInTurn :: Unit -> Unit
+moveUnitInTurn unit =
+    let ow = unit ^. owner
+        bv = unit ^. battleValue
+    in  (Unit bv ow True)
 
 nextPlayer :: GameState -> Player -> Player
 nextPlayer g p = 
