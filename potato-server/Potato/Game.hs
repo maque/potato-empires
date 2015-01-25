@@ -108,7 +108,6 @@ applyMove p (Move start end) = do
             maybeOtherUnit = (gm ! end) ^. unit
             setDestinationUnit gm u = gm & ix end . unit .~ (Just $ moveUnitInTurn u)
             merge unitA unitB = unitA & battleValue +~ (unitB ^. battleValue)
-	    --setM u = (Unit u ^. battleValue u ^. owner True)
 
     changeStart = (gameMap . ix start . unit .= Nothing)
 
@@ -166,10 +165,7 @@ battle unitA unitB =
            else newUnit          
 
 moveUnitInTurn :: Unit -> Unit
-moveUnitInTurn unit =
-    let ow = unit ^. owner
-        bv = unit ^. battleValue
-    in  (Unit bv ow True)
+moveUnitInTurn (Unit bv ow _) = (Unit bv ow True)
 
 nextPlayer :: GameState -> Player -> Player
 nextPlayer g p = 
